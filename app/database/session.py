@@ -1,21 +1,33 @@
+from pathlib import Path
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Указываем путь к файлу базы данных SQLite
-DATABASE_URL = "sqlite:///./teas.db"
 
-# Создаем движок базы данных
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DB_PATH = Path(__file__).resolve().parent / "teas.db"
 
-# Создаем фабрику сессий для выполнения запросов
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+DATABASE_URL = f"sqlite:///{DB_PATH.as_posix()}"
 
-# Базовый класс, от которого будут исследоваться наши таблицы
+print(f"SQLite database: {DB_PATH}")
+
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
 Base = declarative_base()
 
-# Зависимость (Dependency) для FastAPI, чтобы открывать/закрывать сессию БД при каждом запросе
+
 def get_db():
     db = SessionLocal()
+
     try:
         yield db
     finally:

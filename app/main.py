@@ -4,7 +4,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.database.session import Base, engine
+
+# Импортируем модели ДО create_all,
+# чтобы SQLAlchemy знал, какие таблицы создавать
+from app.models import item
+from app.models import order
+from app.models import user
+
 from app.api.v1.items import router as teas_router
+
+
+# Создаём все таблицы, которых ещё нет
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(
@@ -13,6 +25,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,19 +35,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# API
 app.include_router(
     teas_router,
     prefix="/api/v1",
     tags=["Травяные чаи"]
 )
 
-# main.py лежит в prac1/backend/app/main.py
-# поднимаемся до prac1 и находим frontend
-PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Путь до frontend
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = PROJECT_DIR / "frontend"
 
+
+# Фронтенд подключаем ПОСЛЕ API,
+# чтобы "/" не перехватывал /api/v1/*
 app.mount(
     "/",
-    StaticFiles(directory=str(FRONTEND_DIR), html=True),
+    StaticFiles(
+        directory=str(FRONTEND_DIR),
+        html=True
+    ),
     name="frontend"
 )
