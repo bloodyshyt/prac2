@@ -1,0 +1,433 @@
+/* Глобальные стили и современные CSS-переменные */
+:root {
+    --primary: #1e361b;       /* Глубокий хвойный */
+    --accent: #556b2f;        /* Благородный оливковый */
+    --bg-light: #faf9f5;      /* Дорогой молочный/кремовый фон */
+    --surface: #ffffff;       /* Чистый белый для карточек */
+    --text-main: #232b22;     /* Почти черный с зеленым отливом */
+    --text-muted: #626e60;    /* Приглушенный травяной */
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Плавная трендовая анимация */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Современная шапка с эффектом стекла (Glassmorphism) */
+/* ==========================================================================
+   НОВАЯ ПРЕМИАЛЬНАЯ ШАПКА САЙТА (HERO СЕКЦИЯ)
+   ========================================================================== */
+.header {
+    text-align: center;
+    padding: 120px 20px 90px 20px;
+    background: radial-gradient(circle at top, rgba(218, 227, 214, 0.5) 0%, rgba(250, 249, 245, 0) 70%);
+    position: relative;
+}
+
+/* Контейнер для плавной анимации появления */
+.header-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: headerFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0; /* Стартовое состояние для анимации */
+}
+
+/* Маленькая стильная надпись над логотипом */
+.logo-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* Роскошный градиентный логотип */
+.logo {
+    font-family: 'Merriweather', serif;
+    font-size: 4.5rem; /* Сделали крупнее и заметнее */
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -1.5px;
+    
+    /* Эффект градиентного текста */
+    background: linear-gradient(135deg, #122310 0%, #344e2e 50%, #556b2f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    /* Мягкое свечение вокруг букв */
+    filter: drop-shadow(0 2px 10px rgba(30, 54, 27, 0.05));
+}
+
+/* Эстетичный природный разделитель */
+.header-divider {
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.header-divider::before,
+.header-divider::after {
+    content: "";
+    display: inline-block;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(85, 107, 47, 0), rgba(85, 107, 47, 0.4));
+}
+.header-divider::after {
+    background: linear-gradient(to left, rgba(85, 107, 47, 0), rgba(85, 107, 47, 0.4));
+}
+
+/* Обновленный изящный подзаголовок */
+.subtitle {
+    font-family: 'Merriweather', serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    line-height: 1.5;
+}
+
+/* Трендовая анимация: мягкое проявление снизу вверх */
+@keyframes headerFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность для мобильных телефонов, чтобы текст не ломался */
+@media (max-width: 600px) {
+    .logo {
+        font-size: 3rem;
+    }
+    .header {
+        padding: 80px 20px 50px 20px;
+    }
+    .subtitle {
+        font-size: 1.05rem;
+    }
+}
+
+
+.logo {
+    font-family: 'Merriweather', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    font-family: 'Merriweather', serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Контейнер витрины */
+.container {
+    max-width: 1300px;
+    margin: 0 auto 80px auto;
+    padding: 0 24px;
+}
+
+/* Продвинутая сетка товаров */
+.tea-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 40px;
+}
+
+/* Премиальная карточка товара */
+.tea-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(35, 43, 34, 0.02);
+    border: 1px solid rgba(35, 43, 34, 0.04);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Красивый эффект наведения — карточка "приподнимается" */
+.tea-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(30, 54, 27, 0.06);
+    border-color: rgba(30, 54, 27, 0.1);
+}
+
+/* Эстетичное зуммирование картинки при наведении */
+.tea-image {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+.tea-card:hover .tea-image {
+    transform: scale(1.04);
+}
+
+.tea-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.tea-name {
+    font-family: 'Merriweather', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--primary);
+    line-height: 1.3;
+}
+
+.tea-ingredients {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 20px;
+    background: #f2f5f1;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.2px;
+}
+
+.tea-effect {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin-bottom: 28px;
+    flex-grow: 1;
+    opacity: 0.9;
+}
+
+.tea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid rgba(35, 43, 34, 0.06);
+}
+
+.tea-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+}
+
+/* Минималистичная кнопка "В корзину" */
+.buy-btn {
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.buy-btn:hover {
+    background-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Стильный плавающий виджет корзины в стиле Apple */
+.cart-widget {
+    position: fixed;
+    bottom: 30px; /* Перенесли вниз, чтобы не перекрывал контент сверху */
+    right: 30px;
+    background: var(--primary);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(30, 54, 27, 0.25);
+    z-index: 1000;
+    transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.cart-widget:hover {
+    transform: translateY(-4px);
+    background: var(--accent);
+    box-shadow: 0 15px 35px rgba(30, 54, 27, 0.35);
+}
+
+/* Затемняющий оверлей для окон */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 14, 0.4);
+    backdrop-filter: blur(8px); /* Красивое размытие заднего фона */
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Элегантное всплывающее окно */
+.modal-content {
+    background: var(--surface);
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    max-width: 540px;
+    width: 100%;
+    box-shadow: 0 30px 60px rgba(15, 23, 14, 0.15);
+    border: 1px solid rgba(255,255,255,0.8);
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(35, 43, 34, 0.06);
+}
+
+.modal-header h3 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.6rem;
+    color: var(--primary);
+}
+
+.close-btn {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+.close-btn:hover {
+    color: var(--text-main);
+    transform: rotate(90deg);
+}
+
+/* Список товаров в корзине */
+.cart-items-list {
+    max-height: 280px;
+    overflow-y: auto;
+    margin-bottom: 28px;
+    padding-right: 5px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(35, 43, 34, 0.04);
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: #cc5a5a;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-left: 16px;
+    transition: var(--transition);
+}
+.remove-btn:hover {
+    color: #a63c3c;
+    transform: scale(1.2);
+}
+
+/* Красивая большая кнопка оформления */
+.checkout-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+.checkout-btn:hover {
+    background: var(--accent);
+}
+
+.loading {
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    padding: 60px;
+    font-family: 'Merriweather', serif;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   СТИЛИ ДЛЯ КНОПОК ФИЛЬТРАЦИИ КАТЕГОРИЙ
+   ========================================================================== */
+.filter-btn {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(35, 43, 34, 0.15);
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+/* Эффект наведения */
+.filter-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+/* Стиль для активной (нажатой) кнопки */
+.filter-btn.active {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(30, 54, 27, 0.15);
+}

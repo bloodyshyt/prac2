@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Травяная Лавка — Лечебные сборы и чаи</title>
+    <!-- Подключаем красивые шрифты -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    <!-- Подключаем ваш отдельный файл стилей -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Кнопка корзины (виджет) в правом нижнем углу -->
+    <div class="cart-widget" onclick="toggleCartModal(true)">
+        🛒 Корзина: <span id="cart-count">0</span> (<span id="cart-total">0</span> ₽)
+    </div>
+
+    <!-- Новая дизайнерская шапка сайта (Hero-секция) -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-badge">Premium Herbal Blend</div>
+            <h1 class="logo">Травяная Лавка</h1>
+            <div class="header-divider">🌿 ✨ 🌿</div>
+            <p class="subtitle">Природная забота о вашем здоровье, долголетии и душевном покое</p>
+        </div>
+    </header>
+
+    <!-- [НОВАЯ ФИЧА] Кнопки фильтрации категорий -->
+    <div style="text-align: center; margin-bottom: 40px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; padding: 0 20px;">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">Все сборы</button>
+        <button class="filter-btn" onclick="filterCategory('immune', this)">🛡️ Иммунитет и Тонус</button>
+        <button class="filter-btn" onclick="filterCategory('relax', this)">🌙 Расслабление и Сон</button>
+        <button class="filter-btn" onclick="filterCategory('detox', this)">🍃 Очищение и Детокс</button>
+    </div>
+
+    <!-- Главный контейнер для карточек чая -->
+    <main class="container">
+        <div id="tea-container" class="tea-grid">
+            <p class="loading">Загрузка целебных сборов...</p>
+        </div>
+    </main>
+
+    <!-- Модальное окно корзины и оформления -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <!-- Шапка окна -->
+            <div class="modal-header">
+                <h3 id="modal-title">Ваш целебный заказ</h3>
+                <span class="close-btn" onclick="toggleCartModal(false)">&times;</span>
+            </div>
+            
+            <!-- ШАГ 1: Просмотр товаров в корзине -->
+            <div id="cart-step-1">
+                <div id="cart-items" class="cart-items-list"></div>
+                
+                <!-- Поле для ввода промокода -->
+                <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                    <input type="text" id="promo-input" placeholder="Введите промокод" style="flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit;">
+                    <button onclick="applyPromoCode()" style="background: #a3b899; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; color: #2d4a22;">Применить</button>
+                </div>
+                <div id="promo-message" style="font-size: 0.85rem; margin-bottom: 15px; display: none;"></div>
+
+                <!-- Итоговая сумма к оплате -->
+                <div style="margin-bottom: 20px; font-weight: 600; text-align: right;">
+                    Итого к оплате: <span id="modal-total">0</span> ₽
+                </div>
+                
+                <button class="checkout-btn" onclick="goToCheckoutStep()">Перейти к заполнению данных →</button>
+            </div>
+
+            <!-- ШАГ 2: Заполнение контактных данных -->
+            <div id="cart-step-2" style="display: none;">
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                    <label style="font-size: 0.9rem; font-weight: 500;">Ваше имя *</label>
+                    <input type="text" id="customer-name" placeholder="Иван Иванов" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit;">
+                    
+                    <label style="font-size: 0.9rem; font-weight: 500;">Телефон для связи *</label>
+                    <input type="tel" id="customer-phone" placeholder="+7 (999) 123-45-67" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit;">
+                    
+                    <label style="font-size: 0.9rem; font-weight: 500;">Адрес доставки *</label>
+                    <input type="text" id="customer-address" placeholder="г. Москва, ул. Ленина, д. 1, кв. 5" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit;">
+                    
+                    <label style="font-size: 0.9rem; font-weight: 500;">Способ оплаты</label>
+                    <select id="payment-method" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; background: white;">
+                        <option value="card">Картой онлайн</option>
+                        <option value="cash">При получении (курьеру)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px; font-weight: 600; text-align: right;">
+                    Сумма к оплате: <span id="checkout-total">0</span> ₽
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="backToCartStep()" style="flex: 1; background: #eee; color: #333; border: none; padding: 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">← Назад</button>
+                    <button class="checkout-btn" style="flex: 2; margin-top: 0;" onclick="processPayment()">Подтвердить и оплатить</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Модальное окно успешной оплаты -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center; border-top: 5px solid #2d4a22;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🎉</div>
+            <h2 style="font-family: 'Merriweather', serif; color: #2d4a22; margin-bottom: 15px;">Заказ успешно оплачен!</h2>
+            <div id="success-details" style="font-size: 0.95rem; text-align: left; background: #f1f4f0; padding: 20px; border-radius: 12px; margin-bottom: 25px; color: #2c3e2b;"></div>
+            <button onclick="closeSuccessModal()" style="width: 100%; background: #2d4a22; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Прекрасно, вернуться в лавку
+            </button>
+        </div>
+    </div>
+
+    <!-- Подключаем ваш отдельный файл логики скрипта -->
+    <script src="script.js"></script>
+</body>
+</html>
