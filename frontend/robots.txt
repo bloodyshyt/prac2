@@ -1,0 +1,22 @@
+# robots.txt для учебного проекта "Травяная Лавка"
+# Автор: [Захарцов К.М.], группа 25ИС2-1
+# Дата: 2026
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /*.db$
+Disallow: /.env
+
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+Sitemap: http://localhost:8000/sitemap.xml
+
+Crawl-delay: 1
