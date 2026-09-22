@@ -1,15 +1,16 @@
 from typing import Optional
-from fastapi import APIRouter, Depends 
+
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.orm import Session # датабазы
-from app.database.session import get_db #создание ордеров 
-from app.models.order import OrderModel # отрисовка ордера (карточки)
+from sqlalchemy.orm import Session
+
+from app.database.session import get_db
+from app.models.order import OrderModel
 
 
 router = APIRouter()
 
 
-# Схема карточки травяного чая
 class HerbalTea(BaseModel):
     id: int
     name: str
@@ -20,7 +21,6 @@ class HerbalTea(BaseModel):
     category: str
 
 
-# Временная база товаров
 TEAS_DATABASE = [
     HerbalTea(
         id=1,
@@ -79,7 +79,6 @@ TEAS_DATABASE = [
 ]
 
 
-# Получение всех чаев
 @router.get(
     "/teas",
     response_model=list[HerbalTea],
@@ -89,7 +88,6 @@ async def get_all_teas():
     return TEAS_DATABASE
 
 
-# Получение одного чая по ID
 @router.get(
     "/teas/{tea_id}",
     response_model=HerbalTea,
@@ -100,16 +98,14 @@ async def get_tea_by_id(tea_id: int):
         if tea.id == tea_id:
             return tea
 
-    from fastapi import HTTPException
-
     raise HTTPException(
         status_code=404,
         detail="Чай не найден"
     )
 
 
-# Схема создания заказа
 class OrderCreate(BaseModel):
+    user_id: Optional[int] = None
     total_price: float
     items_count: int
     promo_code: Optional[str] = None
@@ -119,15 +115,8 @@ class OrderCreate(BaseModel):
     payment_method: str
 
 
-# Создание заказа и сохранение в SQLite
-@router.post(
-    "/orders",
-    summary="Создать и оплатить заказ"
-)
-async def create_order(
-    order: OrderCreate,
-    db: Session = Depends(get_db)
-):
+@router.post("/orders", summary="Создать заказ")
+async def create_order(order: OrderCreate, db: Session = Depends(get_db)):
     final_sum = order.total_price
 
     message = (
@@ -136,27 +125,19 @@ async def create_order(
         "для подтверждения доставки."
     )
 
-    # Проверяем промокод
     if order.promo_code:
         clean_promo = order.promo_code.strip().lower()
 
         if clean_promo in ["tsaritsino", "царицыно"]:
-            discount = 0.30
-
-            final_sum = round(
-                order.total_price * (1 - discount),
-                2
-            )
+            final_sum = round(order.total_price * 0.70, 2)
 
             message = (
                 "👑 Активирована царская привилегия! "
-                "Скидка 30% в честь Царицыно применена. "
-                "Ваш целебный сбор уже бережно собирается "
-                "и упаковывается!"
+                "Скидка 30% применена."
             )
 
-    # Создаём заказ в базе данных
     new_order = OrderModel(
+        user_id=order.user_id,
         customer_name=order.customer_name,
         customer_phone=order.customer_phone,
         customer_address=order.customer_address,
@@ -166,10 +147,19 @@ async def create_order(
         promo_code=order.promo_code
     )
 
-    # Сохраняем заказ
-    db.add(new_order)
-    db.commit()
-    db.refresh(new_order)
+    try:
+        db.add(new_order)
+        db.commit()
+        db.refresh(new_order)
+
+    except Exception as e:
+        db.rollback()
+        print("ОШИБКА БД:", repr(e))
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
     return {
         "status": "success",
@@ -177,3 +167,35 @@ async def create_order(
         "final_sum": final_sum,
         "message": message
     }
+
+@router.get(
+    "/orders/user/{user_id}",
+    summary="Получить историю заказов пользователя"
+)
+async def get_user_orders(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    orders = (
+        db.query(OrderModel)
+        .filter(OrderModel.user_id == user_id)
+        .order_by(OrderModel.created_at.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": order.id,
+            "items_count": order.items_count,
+            "total_price": order.total_price,
+            "promo_code": order.promo_code,
+            "payment_method": order.payment_method,
+            "customer_address": order.customer_address,
+            "created_at": (
+                order.created_at.isoformat()
+                if order.created_at
+                else None
+            )
+        }
+        for order in orders
+    ]

@@ -2,11 +2,11 @@ from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
 from app.database.session import Base
 
-# Описываем таблицу 'orders' в SQLite
 class OrderModel(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=True)  # Поле для связи с аккаунтом юзера
     customer_name = Column(String, nullable=False)
     customer_phone = Column(String, nullable=False)
     customer_address = Column(String, nullable=False)
@@ -14,4 +14,4 @@ class OrderModel(Base):
     items_count = Column(Integer, nullable=False)
     total_price = Column(Float, nullable=False)
     promo_code = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow) # Время оформления заказа
+    created_at = Column(DateTime, default=datetime.utcnow)

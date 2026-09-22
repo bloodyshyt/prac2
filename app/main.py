@@ -1,23 +1,10 @@
 from pathlib import Path
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.database.session import Base, engine
-
-# Импортируем модели ДО create_all,
-# чтобы SQLAlchemy знал, какие таблицы создавать
-from app.models import item
-from app.models import order
-from app.models import user
-
 from app.api.v1.items import router as teas_router
-
-
-# Создаём все таблицы, которых ещё нет
-Base.metadata.create_all(bind=engine)
-
+from app.api.v1.auth import router as auth_router  # Импортируем роутер авторизации
 
 app = FastAPI(
     title="Травяная Лавка API",
@@ -25,8 +12,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,27 +20,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Подключаем роутеры API к нашему серверу
+app.include_router(teas_router, prefix="/api/v1", tags=["Травяные чаи"])
+app.include_router(auth_router, prefix="/api/v1", tags=["Авторизация"])  # Подключение авторизации
 
-# API
-app.include_router(
-    teas_router,
-    prefix="/api/v1",
-    tags=["Травяные чаи"]
-)
-
-
-# Путь до frontend
+# Вычисляем правильный путь к папке frontend
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = PROJECT_DIR / "frontend"
 
-
-# Фронтенд подключаем ПОСЛЕ API,
-# чтобы "/" не перехватывал /api/v1/*
+# Раздаем фронтенд-файлы
 app.mount(
     "/",
-    StaticFiles(
-        directory=str(FRONTEND_DIR),
-        html=True
-    ),
+    StaticFiles(directory=str(FRONTEND_DIR), html=True),
     name="frontend"
 )
